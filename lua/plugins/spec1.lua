@@ -38,12 +38,164 @@ return {
 			'nvim-tree/nvim-web-devicons',
 		},
 		init = function()
-			require('lualine').setup()
+            local function python_venv()
+                local venv = require("swenv.api").get_current_venv()
+                if venv then
+                    return "🐍 " .. venv.name
+                else
+                    return "🐍 system"
+                end
+            end
+			require('lualine').setup({
+                options = {
+                    theme = "auto",
+                    section_separators = "",
+                    component_separators = "",
+                },
+                sections = {
+                    lualine_a = { "mode" },
+                    lualine_b = { "branch" },
+                    lualine_c = { python_venv }, -- 👈 add it here
+                    lualine_x = { "encoding", "fileformat", "filetype" },
+                    lualine_y = { "progress" },
+                    lualine_z = { "location" },
+                },
+            })
 		end,
 	},
+    {
+          'saghen/blink.cmp',
+          dependencies = { 'rafamadriz/friendly-snippets' },
+          version = '1.*',
+          opts = {
+            -- 'default' (recommended) for mappings similar to built-in completions (C-y to accept)
+            -- 'super-tab' for mappings similar to vscode (tab to accept)
+            -- 'enter' for enter to accept
+            -- 'none' for no mappings
+            --
+            -- All presets have the following mappings:
+            -- C-space: Open menu or open docs if already open
+            -- C-n/C-p or Up/Down: Select next/previous item
+            -- C-e: Hide menu
+            -- C-k: Toggle signature help (if signature.enabled = true)
+            --
+            -- See :h blink-cmp-config-keymap for defining your own keymap
+            keymap = { preset = 'enter' },
+            appearance = {
+              nerd_font_variant = 'mono'
+            },
+            completion = { documentation = { auto_show = false } },
+            sources = {
+              default = { 'lsp', 'path', 'snippets', 'buffer' },
+            },
+            fuzzy = { implementation = "prefer_rust_with_warning" },
+            signature = { enabled = true },
+          },
+          opts_extend = { "sources.default" }
+    },
+    {
+        'neovim/nvim-lspconfig',
+        config = function()
+            vim.lsp.enable('pyright')
+            vim.lsp.config('pyright', {
+                 filetypes = { 'python' }
+            })
+
+            vim.api.nvim_set_keymap('n', '<leader>`', '<cmd>lua vim.diagnostic.open_float()<CR>', { noremap=true, silent=true })
+            vim.api.nvim_set_keymap('n', '[d', '<cmd>lua vim.diagnostic.goto_prev()<CR>', { noremap=true, silent=true })
+            vim.api.nvim_set_keymap('n', ']d', '<cmd>lua vim.diagnostic.goto_next()<CR>', { noremap=true, silent=true })
+            vim.api.nvim_set_keymap('n', '<leader>~', '<cmd>lua vim.diagnostic.setloclist()<CR>', { noremap=true, silent=true })
+
+        end,
+    },
 	{
 		"nvim-lua/plenary.nvim",
 	},
+    {
+        "AckslD/swenv.nvim",
+        dependencies = { "nvim-lua/plenary.nvim", "neovim/nvim-lspconfig", },
+        config = function ()
+            -- require('swenv.api').get_current_venv()
+            -- require('swenv.api').auto_venv()
+            require('swenv').setup({
+                venvs_path = vim.fn.getcwd() .. "/.venv",
+                -- attempt to auto create and set a venv from dependencies
+                auto_create_venv = true,
+                -- name of venv directory to create if using pip
+                auto_create_venv_dir = ".venv"
+            })
+        end
+    },
+    {
+        {
+            'akinsho/toggleterm.nvim', 
+            version = "*", 
+            opts = {},
+            config = function ()
+                --[[require("toggleterm").setup{
+                    direction = "float",
+                    float_opts = {
+                        border = "curved", -- or "single", "double", "none"
+                        winblend = 0,
+                    },
+                    on_open = function(term)
+                        local venv = ".venv/bin/activate"
+                        local cwd = vim.fn.getcwd()
+                        local activate_path = cwd .. "/" .. venv
+                        local cmd = 'source "' .. activate_path .. '"'
+                        -- Send activation command
+                        term:send(cmd, true)
+                    end,
+                } ]]
+
+                require("toggleterm").setup({
+                  direction = "float",
+                  float_opts = {
+                    border = "curved",
+                  },
+                    shell = vim.o.shell .. " -i",  -- force interactive mode
+                  on_open = function(term)
+                        if not term.venv_configured then
+                            local swenv_api = require("swenv.api")
+                            local venv = swenv_api.get_current_venv()
+                            if venv and venv.path then
+                              local activate_script = venv.path .. "/bin/activate"
+                              local uv = vim.loop
+                              if uv.fs_stat(activate_script) then
+                                term:send('source "' .. activate_script .. '"', true)
+                                -- vim.defer_fn(function()
+                                  -- zsh-compatible activation
+                                -- end, 100)
+                                term.venv_configured = true -- ✅ only do it once
+                              else
+                                print("⚠️ venv activate script not found: " .. activate_script)
+                              end
+                            end
+                        end
+                  end,
+                })
+
+                local Terminal = require("toggleterm.terminal").Terminal
+                local term1 = Terminal:new({ id = 1, direction = "horizontal" })
+                local term2 = Terminal:new({ id = 2, direction = "horizontal" })
+                local term3 = Terminal:new({ id = 3, direction = "horizontal" })
+                local term4 = Terminal:new({ id = 4, direction = "horizontal" })
+                local term5 = Terminal:new({ id = 5, direction = "horizontal" })
+                vim.keymap.set("n", "<leader>1", function() term1:toggle() end)
+                vim.keymap.set("n", "<leader>2", function() term2:toggle() end)
+                vim.keymap.set("n", "<leader>3", function() term3:toggle() end)
+                vim.keymap.set("n", "<leader>4", function() term4:toggle() end)
+                vim.keymap.set("n", "<leader>5", function() term5:toggle() end)
+                -- vim.keymap.set('n', '<leader>1', '<cmd>ToggleTerm direction=horizontal<CR>', { noremap=true, silent=true })
+                vim.keymap.set('n', '<leader>T', '<cmd>ToggleTerm direction=float<CR>', { noremap=true, silent=true })
+                -- vim.keymap.set("n", "<leader>tt", function()
+                --   require("toggleterm").toggle(1) -- toggle terminal with ID 1
+                -- end, { noremap = true, silent = true })
+                vim.keymap.set('t', '<Esc>', [[<C-\><C-n>]], { noremap = true, silent = true })
+
+            end,
+        }
+    },
 	{ 
 		'nvim-telescope/telescope-fzf-native.nvim', 
 		build = 'make',
@@ -103,11 +255,11 @@ return {
 				local opts = { noremap = true, silent = true }
 
 				-- Move to previous/next
-				map('n', '<A-,>', '<Cmd>BufferPrevious<CR>', opts)
-				map('n', '<A-.>', '<Cmd>BufferNext<CR>', opts)
+				map('n', '<S-Tab>', '<Cmd>BufferPrevious<CR>', opts)
+				map('n', '<Tab>', '<Cmd>BufferNext<CR>', opts)
 				-- Re-order to previous/next
-				map('n', '<A-;>', '<Cmd>BufferMovePrevious<CR>', opts)
-				map('n', "<A-'>", '<Cmd>BufferMoveNext<CR>', opts)
+				map('n', '<A-,>', '<Cmd>BufferMovePrevious<CR>', opts)
+				map('n', "<A-.>", '<Cmd>BufferMoveNext<CR>', opts)
 				-- Goto buffer in position...
 				map('n', '<A-1>', '<Cmd>BufferGoto 1<CR>', opts)
 				map('n', '<A-2>', '<Cmd>BufferGoto 2<CR>', opts)
@@ -123,6 +275,8 @@ return {
 				map('n', '<A-p>', '<Cmd>BufferPin<CR>', opts)
 				-- Close buffer
 				map('n', '<A-c>', '<Cmd>BufferClose<CR>', opts)
+
+                vim.keymap.set('n', '<leader>bc', '<Cmd>BufferPickDelete<CR>', { noremap = true, silent = true })
 
 			end,
 			opts = {
@@ -156,7 +310,7 @@ return {
 				group_empty = true,
 			  },
 			  filters = {
-				dotfiles = true,
+				dotfiles = false,
 			  },
 			}
 

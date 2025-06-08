@@ -3,6 +3,10 @@
 -- vim.g.loaded_netrwPlugin = 1
 
 
+
+vim.o.shell = "/bin/zsh"
+
+
 -- optionally enable 24-bit colour
 vim.opt.termguicolors = true
 
@@ -23,6 +27,16 @@ vim.opt.autoindent = true
 vim.opt.mouse = "a"
 vim.opt.scrolloff = 5
 vim.opt.expandtab = true
+
+
+
+
+vim.api.nvim_create_autocmd("FileType", {
+    pattern = {"python"},
+    callback = function()
+        require('swenv.api').auto_venv()
+    end
+})
 
 
 
