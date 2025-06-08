@@ -1,15 +1,18 @@
 return {
-	{ 
+	--[[{ 
 		"catppuccin/nvim", 
 		name = "catppuccin", 
 		priority = 1000 ,
 		lazy = false,
-	},
+	},]]
 	{
 		"folke/tokyonight.nvim",
 	  	lazy = false,
 	  	priority = 1000,
 	  	opts = {},
+	},
+	{
+		"nvim-lua/plenary.nvim",
 	},
 	{
 		"karb94/neoscroll.nvim",
@@ -24,14 +27,32 @@ return {
 	{
 		"lukas-reineke/indent-blankline.nvim",
 		main = "ibl",
-		---@module "ibl"
-		---@type ibl.config
 		opts = {},
 	},
 	{ 
 		"nvim-tree/nvim-web-devicons", 
 		opts = {},
 	},
+	{ 
+		'nvim-telescope/telescope-fzf-native.nvim', 
+		build = 'make',
+	},
+    {
+        'stevearc/dressing.nvim',
+        opts = {},
+        config = function()
+            require('dressing').setup({
+                input = {
+                    enabled = true,
+                },
+                select = {
+                    enabled = true,
+                    backend = {"telescope", "fzf_lua", "fzf", "builtin", "nui"},
+                    trim_prompt = true,
+                },
+            })
+        end,
+    },
 	{
 		'nvim-lualine/lualine.nvim',
 		dependencies = { 
@@ -108,98 +129,64 @@ return {
 
         end,
     },
-	{
-		"nvim-lua/plenary.nvim",
-	},
     {
         "AckslD/swenv.nvim",
         dependencies = { "nvim-lua/plenary.nvim", "neovim/nvim-lspconfig", },
         config = function ()
-            -- require('swenv.api').get_current_venv()
-            -- require('swenv.api').auto_venv()
             require('swenv').setup({
                 venvs_path = vim.fn.getcwd() .. "/.venv",
-                -- attempt to auto create and set a venv from dependencies
                 auto_create_venv = true,
                 -- name of venv directory to create if using pip
                 auto_create_venv_dir = ".venv"
             })
+
+            vim.keymap.set("n", "<leader>pv", function()
+                require("swenv.api").pick_venv()
+            end, { noremap = true, silent = true, desc = "Pick Python venv" })
+
         end
     },
     {
-        {
-            'akinsho/toggleterm.nvim', 
-            version = "*", 
-            opts = {},
-            config = function ()
-                --[[require("toggleterm").setup{
-                    direction = "float",
-                    float_opts = {
-                        border = "curved", -- or "single", "double", "none"
-                        winblend = 0,
-                    },
-                    on_open = function(term)
-                        local venv = ".venv/bin/activate"
-                        local cwd = vim.fn.getcwd()
-                        local activate_path = cwd .. "/" .. venv
-                        local cmd = 'source "' .. activate_path .. '"'
-                        -- Send activation command
-                        term:send(cmd, true)
-                    end,
-                } ]]
+        'akinsho/toggleterm.nvim', 
+        version = "*", 
+        opts = {},
+        config = function ()
+            local Terminal = require("toggleterm.terminal").Terminal
+            local swenv_api = require("swenv.api")
 
-                require("toggleterm").setup({
-                  direction = "float",
-                  float_opts = {
-                    border = "curved",
-                  },
-                    shell = vim.o.shell .. " -i",  -- force interactive mode
-                  on_open = function(term)
-                        if not term.venv_configured then
-                            local swenv_api = require("swenv.api")
-                            local venv = swenv_api.get_current_venv()
-                            if venv and venv.path then
-                              local activate_script = venv.path .. "/bin/activate"
-                              local uv = vim.loop
-                              if uv.fs_stat(activate_script) then
-                                term:send('source "' .. activate_script .. '"', true)
-                                -- vim.defer_fn(function()
-                                  -- zsh-compatible activation
-                                -- end, 100)
-                                term.venv_configured = true -- ✅ only do it once
-                              else
-                                print("⚠️ venv activate script not found: " .. activate_script)
-                              end
-                            end
-                        end
-                  end,
-                })
+            local term_with_venv = Terminal:new({
+              direction = "horizontal",
+              on_open = function(term)
+                -- activate venv
+                local venv = swenv_api.get_current_venv()
+                if venv and venv.path then
+                  local activate_script = venv.path .. "/bin/activate"
+                  local uv = vim.loop
+                  if uv.fs_stat(activate_script) then
+                    term:send('source "' .. activate_script .. '"', true)
+                  else
+                    print("⚠️ venv activate script not found: " .. activate_script)
+                  end
+                end
+              end,
+            })
 
-                local Terminal = require("toggleterm.terminal").Terminal
-                local term1 = Terminal:new({ id = 1, direction = "horizontal" })
-                local term2 = Terminal:new({ id = 2, direction = "horizontal" })
-                local term3 = Terminal:new({ id = 3, direction = "horizontal" })
-                local term4 = Terminal:new({ id = 4, direction = "horizontal" })
-                local term5 = Terminal:new({ id = 5, direction = "horizontal" })
-                vim.keymap.set("n", "<leader>1", function() term1:toggle() end)
-                vim.keymap.set("n", "<leader>2", function() term2:toggle() end)
-                vim.keymap.set("n", "<leader>3", function() term3:toggle() end)
-                vim.keymap.set("n", "<leader>4", function() term4:toggle() end)
-                vim.keymap.set("n", "<leader>5", function() term5:toggle() end)
-                -- vim.keymap.set('n', '<leader>1', '<cmd>ToggleTerm direction=horizontal<CR>', { noremap=true, silent=true })
-                vim.keymap.set('n', '<leader>T', '<cmd>ToggleTerm direction=float<CR>', { noremap=true, silent=true })
-                -- vim.keymap.set("n", "<leader>tt", function()
-                --   require("toggleterm").toggle(1) -- toggle terminal with ID 1
-                -- end, { noremap = true, silent = true })
-                vim.keymap.set('t', '<Esc>', [[<C-\><C-n>]], { noremap = true, silent = true })
+            vim.keymap.set('n', '<leader>1', function()
+              term_with_venv:toggle()
+                  vim.schedule(function()
+                local term_win = term_with_venv.window
+                if term_win and vim.api.nvim_win_is_valid(term_win) then
+                  vim.api.nvim_set_current_win(term_win)
+                  vim.cmd("startinsert!")
+                end
+              end)
+            end)
 
-            end,
-        }
+            -- Map ESC to exit terminal mode
+            vim.keymap.set('t', '<Esc>', [[<C-\><C-n>]], { noremap = true, silent = true })
+
+        end,
     },
-	{ 
-		'nvim-telescope/telescope-fzf-native.nvim', 
-		build = 'make',
-	},
 	{
 		'nvim-telescope/telescope.nvim', 
 		tag = '0.1.8',
@@ -218,25 +205,23 @@ return {
 		build = ":TSUpdate",
 		config = function()
 			require'nvim-treesitter.configs'.setup {
-				-- A list of parser names, or "all" (the listed parsers MUST always be installed)
 				ensure_installed = { "python", "html", "javascript", "css", "php" },
-				-- Install parsers synchronously (only applied to `ensure_installed`)
 				sync_install = false,
 				-- Automatically install missing parsers when entering buffer
 				-- Recommendation: set to false if you don't have `tree-sitter` CLI installed locally
 				auto_install = false,
-
 				highlight = {
 					enable = true,
-					-- Setting this to true will run `:h syntax` and tree-sitter at the same time.
-					-- Set this to `true` if you depend on 'syntax' being enabled (like for indentation).
-					-- Using this option may slow down your editor, and you may see some duplicate highlights.
-					-- Instead of true it can also be a list of languages
 					additional_vim_regex_highlighting = false,
 				},
 				indent = {
 					enable = true,
-				}
+				},
+                update_focused_file = {
+                    enable = true,
+                    update_cwd = true,
+                },
+                reload_on_bufenter = true, -- ✅ This triggers reload when buffer changes
 			}
 
 		end,
@@ -280,10 +265,6 @@ return {
 
 			end,
 			opts = {
-			  -- lazy.nvim will automatically call setup for you. put your options here, anything missing will use the default:
-			  -- animation = true,
-			  -- insert_at_start = true,
-			  -- …etc.
 				icons = {
 					buffer_index = true,
 				},
@@ -304,7 +285,7 @@ return {
 				sorter = "case_sensitive",
 			  },
 			  view = {
-				width = 60,
+				width = 50,
 			  },
 			  renderer = {
 				group_empty = true,
@@ -315,11 +296,6 @@ return {
 			}
 
 			vim.keymap.set("n", "<leader>e", ":NvimTreeToggle<CR>", { noremap = true, silent = true })
-			-- Go to the tree on the left
-			-- vim.keymap.set("n", "<leader>tt", "<C-w>h", { noremap = true, silent = true })
-			-- Go to editor (assuming tree is on the left, and editor is on the right)
-			-- vim.keymap.set("n", "<leader>te", "<C-w>l", { noremap = true, silent = true })
-			-- Find current editing file in tree sidebar
 			vim.keymap.set("n", "<leader>tf", ":NvimTreeFindFile<CR>", { noremap = true, silent = true })
 		end,
 	},

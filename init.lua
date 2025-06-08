@@ -25,10 +25,8 @@ vim.opt.smartindent = true
 vim.opt.wrap = false
 vim.opt.autoindent = true
 vim.opt.mouse = "a"
-vim.opt.scrolloff = 5
+-- vim.opt.scrolloff = 5
 vim.opt.expandtab = true
-
-
 
 
 vim.api.nvim_create_autocmd("FileType", {
@@ -51,8 +49,8 @@ vim.api.nvim_create_autocmd("FileType", {
 
 
 -- Custom keymap
-vim.keymap.set("n", "<leader>w", ":w<CR>", { noremap = true, silent = true })
-vim.keymap.set("n", "<leader>q", ":q!<CR>", { noremap = true, silent = true })
+-- vim.keymap.set("n", "<leader>w", ":w<CR>", { noremap = true, silent = true })
+-- vim.keymap.set("n", "<leader>q", ":q!<CR>", { noremap = true, silent = true })
 -- Untuk copy content ke system clipboard
 vim.keymap.set("v", "<leader>y", '"+y', { noremap = true, silent = true })
 vim.keymap.set("n", "<leader>/", ':nohlsearch<CR>', { noremap = true, silent = true })
@@ -61,8 +59,8 @@ vim.keymap.set("n", "<C-h>", "<C-w>h", { noremap = true, silent = true })
 vim.keymap.set("n", "<C-l>", "<C-w>l", { noremap = true, silent = true })
 vim.keymap.set("n", "<C-j>", "<C-w>j", { noremap = true, silent = true })
 vim.keymap.set("n", "<C-k>", "<C-w>k", { noremap = true, silent = true })
-vim.keymap.set("n", "<leader>sh", ":split<CR>", { noremap = true, silent = true })
-vim.keymap.set("n", "<leader>sv", ":vsplit<CR>", { noremap = true, silent = true })
+vim.keymap.set("n", "<leader>|", ":split<CR>", { noremap = true, silent = true })
+vim.keymap.set("n", "<leader>-", ":vsplit<CR>", { noremap = true, silent = true })
 
 
 
