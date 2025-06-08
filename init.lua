@@ -25,8 +25,9 @@ vim.opt.smartindent = true
 vim.opt.wrap = false
 vim.opt.autoindent = true
 vim.opt.mouse = "a"
--- vim.opt.scrolloff = 5
+vim.opt.scrolloff = 3
 vim.opt.expandtab = true
+vim.opt.softtabstop = 4
 
 
 vim.api.nvim_create_autocmd("FileType", {
@@ -59,8 +60,8 @@ vim.keymap.set("n", "<C-h>", "<C-w>h", { noremap = true, silent = true })
 vim.keymap.set("n", "<C-l>", "<C-w>l", { noremap = true, silent = true })
 vim.keymap.set("n", "<C-j>", "<C-w>j", { noremap = true, silent = true })
 vim.keymap.set("n", "<C-k>", "<C-w>k", { noremap = true, silent = true })
-vim.keymap.set("n", "<leader>|", ":split<CR>", { noremap = true, silent = true })
-vim.keymap.set("n", "<leader>-", ":vsplit<CR>", { noremap = true, silent = true })
+vim.keymap.set("n", "<leader>-", ":split<CR>", { noremap = true, silent = true })
+vim.keymap.set("n", "<leader>|", ":vsplit<CR>", { noremap = true, silent = true })
 
 
 
