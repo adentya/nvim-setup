@@ -38,6 +38,24 @@ return {
         build = 'make',
     },
     {
+        'numToStr/Comment.nvim',
+        opts = {
+            -- add any options here
+        },
+        config = function()
+            require('Comment').setup()
+        end
+    },
+    {
+        "smartpde/telescope-recent-files",
+        config = function()
+            require("telescope").load_extension("recent_files")
+            vim.api.nvim_set_keymap("n", "<Leader>h",
+                [[<cmd>lua require('telescope').extensions.recent_files.pick()<CR>]],
+                {noremap = true, silent = true})
+        end
+    },
+    {
         'stevearc/dressing.nvim',
         opts = {},
         config = function()
@@ -54,19 +72,32 @@ return {
         end,
     },
     {
+        "RRethy/vim-illuminate",
+        config = function()
+            vim.keymap.set("n", "<M-f>", function()
+                require("illuminate").goto_next_reference(true)
+            end, { desc = "Next reference" })
+
+            vim.keymap.set("n", "<M-F>", function()
+                require("illuminate").goto_prev_reference(true)
+            end, { desc = "Previous reference" })
+        end
+    },
+    {
         'nvim-lualine/lualine.nvim',
         dependencies = { 
             'nvim-tree/nvim-web-devicons',
         },
-        init = function()
-            local function python_venv()
+        config = function()
+            --[[local function python_venv()
                 local venv = require("swenv.api").get_current_venv()
                 if venv then
-                    return "🐍 " .. venv.name
+                    return venv.name
                 else
-                    return "🐍 system"
+                    return "system"
                 end
-            end
+            end]]
+
             require('lualine').setup({
                 options = {
                     theme = "auto",
@@ -76,7 +107,14 @@ return {
                 sections = {
                     lualine_a = { "mode" },
                     lualine_b = { "branch" },
-                    lualine_c = { python_venv }, -- 👈 add it here
+                    -- lualine_c = {"fileformat", "swenv", "fileformat" },
+                    lualine_c = {
+                        {
+                            'swenv',
+                            icon = '',
+                            colored = true,
+                        }
+                    },
                     lualine_x = { "encoding", "fileformat", "filetype" },
                     lualine_y = { "progress" },
                     lualine_z = { "location" },
@@ -137,13 +175,22 @@ return {
         "AckslD/swenv.nvim",
         dependencies = { "nvim-lua/plenary.nvim", "neovim/nvim-lspconfig", },
         config = function ()
-            require('swenv').setup({
-                venvs_path = vim.fn.getcwd() .. "/.venv",
+            require("swenv").setup({
+                venvs_path = vim.fn.getcwd() .. "/.venv", -- equivalent to `:pwd` in terminal
                 auto_create_venv = true,
-                -- name of venv directory to create if using pip
-                auto_create_venv_dir = ".venv"
+                auto_create_venv_dir = ".venv",
+                post_set_venv = function()
+                    -- Restart pyright safely
+                    for _, client in pairs(vim.lsp.get_clients()) do
+                        if client.name == "pyright" then
+                            client.stop()
+                        end
+                    end
+                    vim.defer_fn(function()
+                        vim.cmd("edit")
+                    end, 100)
+                end,
             })
-
             vim.keymap.set("n", "<leader>pv", function()
                 require("swenv.api").pick_venv()
             end, { noremap = true, silent = true, desc = "Pick Python venv" })
@@ -195,7 +242,7 @@ return {
                     local term_win = term_with_venv.window
                     if term_win and vim.api.nvim_win_is_valid(term_win) then
                         vim.api.nvim_set_current_win(term_win)
-                        vim.cmd("startinsert!")
+                        -- vim.cmd("startinsert!")
                     end
                 end)
             end)
@@ -216,7 +263,7 @@ return {
                     local term_win = term_with_venv.window
                     if term_win and vim.api.nvim_win_is_valid(term_win) then
                         vim.api.nvim_set_current_win(term_win)
-                        vim.cmd("startinsert!")
+                        -- vim.cmd("startinsert!")
                     end
                 end)
             end)
@@ -237,7 +284,7 @@ return {
                     local term_win = term_with_venv.window
                     if term_win and vim.api.nvim_win_is_valid(term_win) then
                         vim.api.nvim_set_current_win(term_win)
-                        vim.cmd("startinsert!")
+                        -- vim.cmd("startinsert!")
                     end
                 end)
             end)
@@ -252,7 +299,11 @@ return {
         tag = '0.1.8',
         config = function()
             local builtin = require('telescope.builtin')
-            vim.keymap.set('n', '<leader>ff', builtin.find_files, { desc = 'Telescope find files' })
+
+            vim.keymap.set('n', '<leader>ff', function()
+                builtin.find_files({ hidden = true })
+            end, { desc = 'Telescope find files (including hidden & ignored)' })
+
             vim.keymap.set('n', '<leader>fg', builtin.live_grep, { desc = 'Telescope live grep' })
             vim.keymap.set('n', '<leader>fb', builtin.buffers, { desc = 'Telescope buffers' })
             vim.keymap.set('n', '<leader>fh', builtin.help_tags, { desc = 'Telescope help tags' })
@@ -264,6 +315,7 @@ return {
             end, {
                     desc = 'LSP Workspace Symbols'
                 })
+
         end,
     },
     {
@@ -280,7 +332,7 @@ return {
                 auto_install = false,
                 highlight = {
                     enable = true,
-                    additional_vim_regex_highlighting = false,
+                    additional_vim_regex_highlighting = true,
                 },
                 indent = {
                     enable = true,
@@ -289,9 +341,14 @@ return {
                     enable = true,
                     update_cwd = true,
                 },
-                reload_on_bufenter = true, -- ✅ This triggers reload when buffer changes
+                reload_on_bufenter = true,
+                refactor = {
+                    highlight_definitions = {
+                        enable = true,
+                        clear_on_cursor_move = true,
+                    },
+                },
             }
-
         end,
     },
     {
@@ -351,12 +408,14 @@ return {
                 view = {
                     width = 50,
                 },
-                renderer = {
-                    group_empty = true,
-                },
                 filters = {
                     dotfiles = false,
+                    custom = {},
                 },
+                git = {
+                    enable = true,
+                    ignore = false,
+                }
             }
 
             vim.keymap.set("n", "<leader>e", ":NvimTreeToggle<CR>", { noremap = true, silent = true })

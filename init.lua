@@ -28,6 +28,14 @@ vim.opt.mouse = "a"
 vim.opt.scrolloff = 3
 vim.opt.expandtab = true
 vim.opt.softtabstop = 4
+vim.opt.list = true
+vim.opt.listchars = {
+    tab = "» ",
+    trail = "·",
+    extends = "›",
+    precedes = "‹",
+    nbsp = "␣",
+}
 
 
 vim.api.nvim_create_autocmd("FileType", {
