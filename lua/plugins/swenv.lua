@@ -1,6 +1,8 @@
 return {
     {
+        enabled = false,
         "AckslD/swenv.nvim",
+        lazy = false,
         dependencies = { "nvim-lua/plenary.nvim", "neovim/nvim-lspconfig", },
         config = function ()
             require("swenv").setup({
@@ -19,9 +21,6 @@ return {
                     end, 100)
                 end,
             })
-            vim.keymap.set("n", "<leader>pv", function()
-                require("swenv.api").pick_venv()
-            end, { noremap = true, silent = true, desc = "Pick Python venv" })
 
         end
     },

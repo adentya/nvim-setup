@@ -40,16 +40,6 @@ vim.opt.colorcolumn = "100,120"
 
 
 
--- Jika filetype Python, maka coba cari existing .venv
-vim.api.nvim_create_autocmd("FileType", {
-    pattern = {"python"},
-    callback = function()
-        require('swenv.api').auto_venv()
-    end
-})
-
-
-
 -- Fix default file exploler di nvim yg tidak otomatis tampil number & relativenumber.
 vim.api.nvim_create_autocmd("FileType", {
 	pattern = "netrw",

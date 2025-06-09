@@ -5,23 +5,29 @@ return {
         opts = {},
         config = function ()
             local Terminal = require("toggleterm.terminal").Terminal
-            local swenv_api = require("swenv.api")
 
             function create_terminal()
                 return Terminal:new({
-                    direction = "horizontal",
+                    direction = "float",
+                    shell = vim.o.shell,
                     on_open = function(term)
-                        -- activate venv
-                        local venv = swenv_api.get_current_venv()
-                        if venv and venv.path then
-                            local activate_script = venv.path .. "/bin/activate"
-                            local uv = vim.loop
-                            if uv.fs_stat(activate_script) then
-                                term:send('source "' .. activate_script .. '"', true)
-                            else
-                                print("⚠️ venv activate script not found: " .. activate_script)
-                            end
+                        -- Check if we've already activated the venv in this terminal buffer
+                        if vim.b[term.bufnr].venv_activated then
+                            return
                         end
+
+                        -- activate venv
+                        local venv_path = require("venv-selector").get_active_venv()
+                        if venv_path then
+                            -- Send the activate command into the terminal
+                            term:send("source " .. venv_path .. "/bin/activate && clear", true)
+
+                            -- Mark this terminal buffer as having the venv activated
+                            vim.b[term.bufnr].venv_activated = true
+                        else
+                            vim.notify("No virtual environment selected.", vim.log.levels.WARN)
+                        end
+
                     end,
                 })
             end

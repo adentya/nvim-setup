@@ -5,15 +5,14 @@ return {
             'nvim-tree/nvim-web-devicons',
         },
         config = function()
-            --[[local function python_venv()
-                local venv = require("swenv.api").get_current_venv()
+            function get_env()
+                local venv = require("venv-selector").get_active_venv()
                 if venv then
-                    return venv.name
+                    return vim.fn.fnamemodify(venv, ":t")  -- Show only venv folder name
                 else
                     return "system"
                 end
-            end]]
-
+            end
             require('lualine').setup({
                 options = {
                     theme = "auto",
@@ -26,7 +25,7 @@ return {
                     -- lualine_c = {"fileformat", "swenv", "fileformat" },
                     lualine_c = {
                         {
-                            'swenv',
+                            get_env,
                             icon = '',
                             colored = true,
                         }
