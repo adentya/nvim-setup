@@ -43,3 +43,6 @@ require("lazy").setup({
 
 -- Theme
 vim.cmd.colorscheme("tokyonight")
+
+local colors = require("tokyonight.colors").setup()
+vim.api.nvim_set_hl(0, "ColorColumn", { bg = colors.bg_highlight })

@@ -401,9 +401,9 @@ return {
             "nvim-tree/nvim-web-devicons",
         },
         config = function()
-            vim.cmd [[
-                highlight! link NvimTreeOpenedFileName TermCursor
-            ]]
+            -- vim.cmd [[
+            --     highlight! link NvimTreeOpenedFileName TermCursor
+            -- ]]
 
             require("nvim-tree").setup {
                 sort = {

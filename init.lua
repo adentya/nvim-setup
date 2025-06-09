@@ -36,8 +36,11 @@ vim.opt.listchars = {
     precedes = "‹",
     nbsp = "␣",
 }
+vim.opt.colorcolumn = "100,120"
 
 
+
+-- Jika filetype Python, maka coba cari existing .venv
 vim.api.nvim_create_autocmd("FileType", {
     pattern = {"python"},
     callback = function()
