@@ -28,7 +28,8 @@ return {
                             get_env,
                             icon = '',
                             colored = true,
-                        }
+                        },
+                        {'filename', path = 2}
                     },
                     lualine_x = { "encoding", "fileformat", "filetype" },
                     lualine_y = { "progress" },

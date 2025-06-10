@@ -5,17 +5,20 @@ return {
         config = function()
             local builtin = require('telescope.builtin')
 
-            vim.keymap.set('n', '<leader>ff', function()
-                builtin.find_files({ hidden = true })
+            vim.keymap.set('n', 'FF', function()
+                builtin.find_files({ cwd = vim.fn.getcwd() })
             end, { desc = 'Telescope find files (including hidden & ignored)' })
 
-            vim.keymap.set('n', '<leader>fg', builtin.live_grep, { desc = 'Telescope live grep' })
-            vim.keymap.set('n', '<leader>fb', builtin.buffers, { desc = 'Telescope buffers' })
-            vim.keymap.set('n', '<leader>fh', builtin.help_tags, { desc = 'Telescope help tags' })
+            vim.keymap.set('n', 'FG', function()
+                builtin.live_grep({ cwd = vim.fn.getcwd() })
+            end, { desc = 'Telescope live grep' })
 
-            vim.keymap.set('n', '<leader>@', function ()
+            vim.keymap.set('n', 'B', builtin.buffers, { desc = 'Telescope buffers' })
+            vim.keymap.set('n', '?', builtin.help_tags, { desc = 'Telescope help tags' })
+
+            vim.keymap.set('n', '@', function ()
                 builtin.lsp_document_symbols({
-                    symbols = { "Function", "Method" }  -- filters only these kinds
+                    symbols = { "Function", "Method", "Class" }  -- filters only these kinds
                 })
             end, {
                     desc = 'LSP Workspace Symbols'

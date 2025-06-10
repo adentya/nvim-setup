@@ -8,7 +8,7 @@ return {
 
             function create_terminal()
                 return Terminal:new({
-                    direction = "float",
+                    direction = "horizontal",
                     shell = vim.o.shell,
                     on_open = function(term)
                         -- Check if we've already activated the venv in this terminal buffer

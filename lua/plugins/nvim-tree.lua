@@ -37,6 +37,7 @@ return {
 
             vim.keymap.set("n", "<leader>e", ":NvimTreeToggle<CR>", { noremap = true, silent = true })
             vim.keymap.set("n", "<leader>tf", ":NvimTreeFindFile<CR>", { noremap = true, silent = true })
+            vim.keymap.set("n", "<leader>ts1", ":NvimTreeResize 10<CR>", { noremap = true, silent = true })
             vim.keymap.set("n", "<leader>ts2", ":NvimTreeResize 20<CR>", { noremap = true, silent = true })
             vim.keymap.set("n", "<leader>ts3", ":NvimTreeResize 30<CR>", { noremap = true, silent = true })
             vim.keymap.set("n", "<leader>ts4", ":NvimTreeResize 40<CR>", { noremap = true, silent = true })
