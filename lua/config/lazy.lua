@@ -19,7 +19,65 @@ vim.opt.rtp:prepend(lazypath)
 -- loading lazy.nvim so that mappings are correct.
 -- This is also a good place to setup other settings (vim.opt)
 
+vim.o.shell = "/bin/zsh"
 
+-- optionally enable 24-bit colour
+vim.opt.termguicolors = true
+
+-- Default mapleader
+vim.g.mapleader = " "
+vim.g.maplocalleader = " "
+
+-- Custom config
+vim.opt.number = true
+vim.opt.relativenumber = true
+vim.opt.tabstop = 4
+vim.opt.shiftwidth = 4
+vim.opt.smartindent = true
+vim.opt.wrap = false
+vim.opt.autoindent = true
+vim.opt.mouse = "a"
+vim.opt.scrolloff = 3
+vim.opt.expandtab = true
+vim.opt.softtabstop = 4
+vim.opt.list = true
+vim.opt.listchars = {
+    tab = "» ",
+    trail = "·",
+    extends = "›",
+    precedes = "‹",
+    nbsp = "␣",
+}
+vim.opt.colorcolumn = "100,120"
+
+
+-- Custom keymap
+local opts = { noremap = true, silent = true }
+
+-- Untuk copy content ke system clipboard
+vim.keymap.set("v", "<leader>y", '"+y', opts)
+-- Hilangkan background highlight ketika selesai search
+vim.keymap.set("n", "<Esc>", ':nohlsearch<CR>', opts)
+-- Defaut file exploler bawaan vim
+vim.keymap.set("n", "<leader>E", vim.cmd.Ex, opt)
+-- Perpindahan antar window
+vim.keymap.set("n", "<C-h>", "<C-w>h", opts)
+vim.keymap.set("n", "<C-l>", "<C-w>l", opts)
+vim.keymap.set("n", "<C-j>", "<C-w>j", opts)
+vim.keymap.set("n", "<C-k>", "<C-w>k", opts)
+-- Split window
+vim.keymap.set("n", "<leader>-", ":split<CR><C-w>j", opts)
+vim.keymap.set("n", "<leader>|", ":vsplit<CR><C-w>l", opts)
+
+
+-- Fix default file exploler di nvim yg tidak otomatis tampil number & relativenumber.
+vim.api.nvim_create_autocmd("FileType", {
+	pattern = "netrw",
+	callback = function()
+		vim.wo.number = true
+		vim.wo.relativenumber = true
+	end,
+})
 
 
 -- Setup lazy.nvim
@@ -44,5 +102,5 @@ require("lazy").setup({
 -- Theme
 vim.cmd.colorscheme("tokyonight")
 
-local colors = require("tokyonight.colors").setup()
-vim.api.nvim_set_hl(0, "ColorColumn", { bg = colors.bg_highlight })
+
+
