@@ -25,13 +25,31 @@ return {
                     -- lualine_c = {"fileformat", "swenv", "fileformat" },
                     lualine_c = {
                         {
+                            'diagnostics',
+                            sources = {'nvim_diagnostic'},
+                            sections = {'error', 'warn', 'info', 'hint'},
+                            symbols = {
+                                error = ' ',
+                                warn  = ' ',
+                                info  = ' ',
+                                hint  = ' ',
+                            },
+                            colored = true,
+                            update_in_insert = false,
+                            always_visible = false,
+                        },
+                        {
                             get_env,
                             icon = '',
                             colored = true,
                         },
                         {'filename', path = 2}
                     },
-                    lualine_x = { "encoding", "fileformat", "filetype" },
+                    lualine_x = {
+                        "encoding", 
+                        "fileformat", 
+                        "filetype",
+                    },
                     lualine_y = { "progress" },
                     lualine_z = { "location" },
                 },
