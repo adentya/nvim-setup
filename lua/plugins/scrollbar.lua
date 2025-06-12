@@ -9,7 +9,7 @@ return {
 
             require("scrollbar").setup({
                 handle = {
-                    text = "▓▓"
+                    text = "  "
                 },
                 handlers = {
                     diagnostic = true,

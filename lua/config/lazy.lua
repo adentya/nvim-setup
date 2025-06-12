@@ -49,6 +49,17 @@ vim.opt.listchars = {
     nbsp = "␣",
 }
 vim.opt.colorcolumn = "100,120"
+vim.opt.clipboard = "unnamedplus"
+
+
+-- Config specific for Neovide app
+vim.g.neovide_position_animation_length = 0.00
+vim.g.neovide_cursor_animation_length = 0.02
+vim.g.neovide_cursor_trail_size = 0
+vim.g.neovide_cursor_animate_in_insert_mode = true
+vim.g.neovide_cursor_animate_command_line = true
+vim.g.neovide_scroll_animation_far_lines = 1
+vim.g.neovide_scroll_animation_length = 0.15
 
 
 -- Custom keymap
@@ -56,6 +67,7 @@ local opts = { noremap = true, silent = true }
 
 -- Untuk copy content ke system clipboard
 vim.keymap.set("v", "<leader>y", '"+y', opts)
+vim.keymap.set("n", "<leader>p", '"+p', opts)
 -- Hilangkan background highlight ketika selesai search
 vim.keymap.set("n", "<Esc>", ':nohlsearch<CR>', opts)
 -- Defaut file exploler bawaan vim
