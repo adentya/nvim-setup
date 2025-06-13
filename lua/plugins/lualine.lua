@@ -3,9 +3,10 @@ return {
         'nvim-lualine/lualine.nvim',
         dependencies = { 
             'nvim-tree/nvim-web-devicons',
+            'lewis6991/gitsigns.nvim',
         },
         config = function()
-            function get_env()
+            local function get_env()
                 local venv = require("venv-selector").get_active_venv()
                 if venv then
                     return vim.fn.fnamemodify(venv, ":t")  -- Show only venv folder name
@@ -13,6 +14,18 @@ return {
                     return "system"
                 end
             end
+
+            local function blame_line()
+                local gs = vim.b.gitsigns_blame_line_dict
+                if gs then
+                    local author = gs.author or "Unknown"
+                    local date = gs.author_time and os.date("%Y-%m-%d", gs.author_time) or ""
+                    local summary = string.sub(gs.summary, 1, 15) .. "..." or ""
+                    return string.format(" %s • %s • %s", author, date, summary)
+                end
+                return ""
+            end
+
             require('lualine').setup({
                 options = {
                     theme = "auto",
@@ -46,6 +59,7 @@ return {
                             update_in_insert = false,
                             always_visible = false,
                         },
+                        blame_line,
                         "encoding", 
                         "fileformat", 
                         "filetype",
