@@ -80,6 +80,9 @@ vim.keymap.set("n", "<C-k>", "<C-w>k", opts)
 -- Split window
 vim.keymap.set("n", "<leader>-", ":split<CR><C-w>j", opts)
 vim.keymap.set("n", "<leader>|", ":vsplit<CR><C-w>l", opts)
+vim.keymap.set("n", "\\q", ":q<CR>", opts)
+vim.keymap.set("n", "\\w", ":w<CR>", opts)
+vim.keymap.set("n", "\\x", ":qa!<CR>", opts)
 
 
 -- Fix default file exploler di nvim yg tidak otomatis tampil number & relativenumber.
