@@ -24,9 +24,9 @@ return {
 
                     if path then
                         if lnum then
-                            vim.cmd(string.format("edit +%d %s", lnum, vim.fn.fnameescape(path)))
+                            vim.cmd(string.format("edit +%d %s", lnum, vim.fn.fnameescape(path)) + actions.center)
                         else
-                            vim.cmd(string.format("edit %s", vim.fn.fnameescape(path)))
+                            vim.cmd(string.format("edit %s", vim.fn.fnameescape(path)) + actions.center)
                         end
                     end
                 end
