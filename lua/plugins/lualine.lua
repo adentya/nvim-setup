@@ -21,7 +21,7 @@ return {
                     local author = gs.author or "Unknown"
                     local date = gs.author_time and os.date("%Y-%m-%d", gs.author_time) or ""
                     local summary = string.sub(gs.summary, 1, 15) .. "..." or ""
-                    return string.format(" %s • %s • %s", author, date, summary)
+                    return string.format("%s • %s • %s", author, date, summary)
                 end
                 return ""
             end
@@ -59,7 +59,7 @@ return {
                             update_in_insert = false,
                             always_visible = false,
                         },
-                        blame_line,
+                        { blame_line, icon = "", colored = true},
                         "encoding", 
                         "fileformat", 
                         "filetype",
