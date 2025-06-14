@@ -26,6 +26,13 @@ return {
                 return ""
             end
 
+            local function tab_spaces()
+                local expandtab = vim.bo.expandtab and "Spaces" or "Tabs"
+                local shiftwidth = vim.bo.shiftwidth
+                return string.format("%s: %d", expandtab, shiftwidth)
+            end
+
+
             require('lualine').setup({
                 options = {
                     theme = "auto",
@@ -60,6 +67,7 @@ return {
                             always_visible = false,
                         },
                         { blame_line, icon = "", colored = true},
+                        tab_spaces,
                         "encoding", 
                         "fileformat", 
                         "filetype",

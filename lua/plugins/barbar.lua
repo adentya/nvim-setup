@@ -27,7 +27,7 @@ return {
             -- Pin/unpin buffer
             map('n', '<A-p>', '<Cmd>BufferPin<CR>', opts)
             -- Close buffer
-            map('n', '<A-c>', '<Cmd>BufferClose<CR>', opts)
+            map('n', '<A-c>', '<Cmd>BufferClose!<CR>', opts)
             -- Close buffer right
             map('n', '<A-.>', '<Cmd>BufferCloseBuffersRight<CR>', opts)
             -- Close buffer left
