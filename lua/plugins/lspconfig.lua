@@ -29,8 +29,9 @@ return {
                 vim.lsp.buf.range_formatting({}, vim.api.nvim_buf_get_mark(0, "<"), vim.api.nvim_buf_get_mark(0, ">"))
             end, { desc = "Format selected lines with LSP" })
             
+            local lspconfig = require("lspconfig")
 
-            require('lspconfig').pyright.setup {
+            lspconfig.pyright.setup {
                 settings = {
                     python = {
                         analysis = {
@@ -44,7 +45,7 @@ return {
             }
 
 
-            require('lspconfig').intelephense.setup {
+            lspconfig.intelephense.setup {
                 settings = {
                     intelephense = {
                         stubs = {
@@ -62,6 +63,23 @@ return {
                     }
                 }
             }
+
+            -- JavaScript / TypeScript
+            lspconfig.ts_ls.setup({})
+
+            -- HTML
+            lspconfig.html.setup({})
+
+            -- CSS
+            lspconfig.cssls.setup({})
+
+            -- Vue
+            lspconfig.vuels.setup({})
+
+            -- Emmet (optional, bagus untuk React/Vue/CSS/HTML)
+            lspconfig.emmet_ls.setup({
+                filetypes = { "html", "css", "scss", "javascript", "typescriptreact", "javascriptreact", "vue" },
+            })
 
 
         end,
