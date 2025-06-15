@@ -1,7 +1,7 @@
 return {
     {
         'nvim-telescope/telescope.nvim', 
-        tag = '0.1.8',
+        -- tag = '0.1.8',
         config = function()
 
             local select_one_or_multi = function(prompt_bufnr)
