@@ -21,6 +21,12 @@ return {
         },
         config = function()
             require("noice").setup({
+                notify = {
+                    enabled = true,
+                },
+                messages = {
+                    enabled = false,
+                },
                 lsp = {
                     -- override markdown rendering so that **cmp** and other plugins use **Treesitter**
                     override = {
@@ -48,6 +54,9 @@ return {
                     },
                 },
             })
+
+            vim.notify = require("noice").notify
+
         end
     }
 }

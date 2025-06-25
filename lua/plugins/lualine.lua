@@ -20,7 +20,7 @@ return {
                 if gs then
                     local author = gs.author or "Unknown"
                     local date = gs.author_time and os.date("%Y-%m-%d", gs.author_time) or ""
-                    local summary = string.sub(gs.summary, 1, 15) .. "..." or ""
+                    local summary = string.sub(gs.summary, 1, 25) .. "..." or ""
                     return string.format("%s • %s • %s", author, date, summary)
                 end
                 return ""
