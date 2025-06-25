@@ -39,6 +39,12 @@ return {
                             autoSearchPaths = true,
                             useLibraryCodeForTypes = true,
                             diagnosticMode = "openFilesOnly", -- or "openFilesOnly"
+                            -- reportAttributeAccessIssue = false,
+                            -- reportGeneralTypeIssues = false,
+                            -- reportOptionalMemberAccess = false,
+                            -- reportFunctionMemberAccess = false,
+                            -- reportArgumentType = false,
+                            -- reportIncompatibleVariableOverride = false,
                         }
                     }
                 }
